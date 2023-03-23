@@ -13,6 +13,7 @@ d3.json(url).then(function(data) {
 
     let testSubject = data.names;
 
+    // Loop through every Test Subject and add their ID to the dropdown menu.
     for (let i = 0; i < testSubject.length; i++) {
         
         let id = testSubject[i]
@@ -21,5 +22,53 @@ d3.json(url).then(function(data) {
         .append('option')
         .text(id)
         .property('value', id);
+
     };
+
 });
+
+//function defaultId(testSubject) {
+    //return testSubject.id == '940';
+  //}
+
+d3.json(url).then(function(data) {
+
+    let sample = data.samples
+
+    let sampleValuesList = [];
+    let otuIdsList = [];
+    let otuLabelsList = [];
+
+    for (let i = 0; i < 10; i++) {
+                
+        sampleValuesList.push(sample[0].sample_values[i]);
+
+        otuIdsList.push(sample[0].otu_ids[i].toString());
+
+        otuLabelsList.push(sample[0].otu_labels[i]);
+
+    };
+
+    console.log(sampleValuesList);
+
+    console.log(otuIdsList);
+
+    console.log(otuLabelsList);
+
+    let dataSet = [{
+        x: sampleValuesList.reverse(),
+        y: otuIdsList.map(x => `OTU ${x}`).reverse(),
+        text: otuLabelsList.reverse(),
+        type: 'bar',
+        orientation: 'h'
+    }];
+    
+    let layout = {
+        height: 600,
+        width: 800
+    };
+    
+    Plotly.newPlot('bar', dataSet, layout);
+
+});
+
