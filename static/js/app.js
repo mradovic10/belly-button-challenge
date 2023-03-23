@@ -27,10 +27,7 @@ d3.json(url).then(function(data) {
 
 });
 
-//function defaultId(testSubject) {
-    //return testSubject.id == '940';
-  //}
-
+// Create default data to be shown on the webpage before any Test Subject ID is chosen.
 d3.json(url).then(function(data) {
 
     let sample = data.samples
@@ -39,22 +36,22 @@ d3.json(url).then(function(data) {
     let otuIdsList = [];
     let otuLabelsList = [];
 
+    // Loop through the first 10 sample_values, otu_ids, and otu_labels of the first sample (where id == '940') in the samples array,
+    // then add them to their respective lists.
     for (let i = 0; i < 10; i++) {
                 
         sampleValuesList.push(sample[0].sample_values[i]);
-
         otuIdsList.push(sample[0].otu_ids[i].toString());
-
         otuLabelsList.push(sample[0].otu_labels[i]);
 
     };
 
+    // Log our results into the console.
     console.log(sampleValuesList);
-
     console.log(otuIdsList);
-
     console.log(otuLabelsList);
 
+    // Using the data from the three lists above, create a horizontal bar graph.
     let dataSet = [{
         x: sampleValuesList.reverse(),
         y: otuIdsList.map(x => `OTU ${x}`).reverse(),
@@ -65,10 +62,34 @@ d3.json(url).then(function(data) {
     
     let layout = {
         height: 600,
-        width: 800
+        width: 600
     };
     
     Plotly.newPlot('bar', dataSet, layout);
+
+    // Demographic Info section.
+    let meta = data.metadata;
+
+    let defaultInfo = [];
+
+    // Loop through the information of the first individual in the metadata array and store it in the defaultInfo list.
+    for (let [key, value] of Object.entries(meta[0])) {
+        defaultInfo.push(`${key}: ${value}`);
+    };
+
+    // Log our results into the console.
+    console.log(defaultInfo);
+        
+    // Add the defaultInfo information to the webpage under the Demographic Info header as an unordered list.
+    let demInfo = document.querySelector('#sample-metadata');
+
+    let nodes = defaultInfo.map(function(row) {
+        let ul = document.createElement('ul');
+        ul.textContent = row;
+        return ul;
+    });
+
+    demInfo.append(...nodes);
 
 });
 
