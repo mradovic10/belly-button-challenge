@@ -9,8 +9,10 @@ d3.json(url).then(function(data) {
 // Insert every Test Subject ID into the dropdown menu. When one is clicked, info for that Test Subject will be shown.
 d3.json(url).then(function(data) {
 
+    // Use D3 to select the dropdown menu.
     let dropdownMenu = d3.select('#selDataset');
 
+    // Create a variable to represent the 'names' array of our dataset.
     let testSubject = data.names;
 
     // Loop through every Test Subject and add their ID to the dropdown menu.
@@ -30,18 +32,19 @@ d3.json(url).then(function(data) {
 // Create default data to be shown on the webpage before any Test Subject ID is chosen.
 d3.json(url).then(function(data) {
 
+    // Create a variable to represent the 'samples' array of our dataset.
     let sample = data.samples
 
     let sampleValuesList = [];
     let otuIdsList = [];
     let otuLabelsList = [];
 
-    // Loop through the first 10 sample_values, otu_ids, and otu_labels of the first sample (where id == '940') in the samples array,
+    // Loop through the first 10 sample_values, otu_ids, and otu_labels of the first sample (where id == '940') in the 'samples' array,
     // then add them to their respective lists.
     for (let i = 0; i < 10; i++) {
                 
         sampleValuesList.push(sample[0].sample_values[i]);
-        otuIdsList.push(sample[0].otu_ids[i].toString());
+        otuIdsList.push(sample[0].otu_ids[i]);
         otuLabelsList.push(sample[0].otu_labels[i]);
 
     };
@@ -62,7 +65,8 @@ d3.json(url).then(function(data) {
     
     let layout = {
         height: 600,
-        width: 600
+        width: 600,
+        title: `The Top 10 OTUs in Test Subject ${sample[0].id}'s Belly Button`
     };
     
     Plotly.newPlot('bar', dataSet, layout);
@@ -92,4 +96,50 @@ d3.json(url).then(function(data) {
     demInfo.append(...nodes);
 
 });
+
+// On change to the DOM, call optionChanged().
+d3.selectAll('#selDataset').on('change', optionChanged);
+
+// Function called by DOM changes.
+function optionChanged() {
+
+    d3.json(url).then(function(data) {
+
+        // Use D3 to select the dropdown menu.
+        let dropdownMenu = d3.select('#selDataset');
+
+        // Assign the value of the dropdown menu option to a variable.
+        let id = dropdownMenu.property('value');
+
+        // Create a variable to represent the Test Subject ID that was chosen by the user and filter our data results to that specific ID.
+        let sample = data.samples.filter(x => x.id.toString() == id)[0];
+
+        let sampleValuesList = [];
+        let otuIdsList = [];
+        let otuLabelsList = [];
+
+        // Loop through the first 10 sample_values, otu_ids, and otu_labels of the chosen sample in the 'samples' array,
+        // then add them to their respective lists.
+        for (let i = 0; i < 10; i++) {
+                
+            sampleValuesList.push(sample.sample_values[i]);
+            otuIdsList.push(sample.otu_ids[i]);
+            otuLabelsList.push(sample.otu_labels[i]);
+
+        };
+
+        // Log our results into the console.
+        console.log(sampleValuesList);
+        console.log(otuIdsList);
+        console.log(otuLabelsList);
+    
+        // Update the bar chart's data to represent the info of the Test Subject chosen by the user.
+        Plotly.restyle('bar', 'x', [sampleValuesList.reverse()]);
+        Plotly.restyle('bar', 'y', [otuIdsList.map(x => `OTU ${x}`).reverse()]);
+        Plotly.restyle('bar', 'text', [otuLabelsList.reverse()]);
+        Plotly.relayout('bar', 'title', `The Top 10 OTUs in Test Subject ${sample.id}'s Belly Button`);
+
+    });
+
+};
 
