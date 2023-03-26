@@ -3,7 +3,9 @@ const url = "https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/
 
 // Fetch the JSON data and log it in the console to look over.
 d3.json(url).then(function(data) {
+    
     console.log(data);
+
 });
 
 // Insert every Test Subject ID into the dropdown menu. When one is clicked, info for that Test Subject will be shown.
@@ -76,9 +78,11 @@ d3.json(url).then(function(data) {
 
     let defaultInfo = [];
 
-    // Loop through the information of the first individual in the metadata array and store it in the defaultInfo list.
+    // Loop through the information of the first individual in the 'metadata' array and store it in the defaultInfo list.
     for (let [key, value] of Object.entries(meta[0])) {
+        
         defaultInfo.push(`${key}: ${value}`);
+
     };
 
     // Log our results into the console.
@@ -88,9 +92,11 @@ d3.json(url).then(function(data) {
     let demInfo = document.querySelector('#sample-metadata');
 
     let nodes = defaultInfo.map(function(row) {
+
         let ul = document.createElement('ul');
         ul.textContent = row;
         return ul;
+
     });
 
     demInfo.append(...nodes);
@@ -138,6 +144,38 @@ function optionChanged() {
         Plotly.restyle('bar', 'y', [otuIdsList.map(x => `OTU ${x}`).reverse()]);
         Plotly.restyle('bar', 'text', [otuLabelsList.reverse()]);
         Plotly.relayout('bar', 'title', `The Top 10 OTUs in Test Subject ${sample.id}'s Belly Button`);
+
+        // Demographic Info section.
+        let meta = data.metadata.filter(x => x.id.toString() == id)[0];
+
+        let testSubjectInfo = [];
+
+        // Loop through the information of the chosen individual in the 'metadata' array and store it in the testSubjectInfo list.
+        for (let [key, value] of Object.entries(meta)) {
+
+            testSubjectInfo.push(`${key}: ${value}`);
+
+        };
+
+        // Log our results into the console.
+        console.log(testSubjectInfo);
+        
+        // Add the chosen individual's information to the webpage under the Demographic Info header as an unordered list.
+        let demInfo = document.querySelector('#sample-metadata');
+
+        // First, the information from #sample-metadata of the default individual must be erased.
+        demInfo.innerHTML = '';
+
+        // Then, we continue with adding the chosen individual's information.
+        let nodes = testSubjectInfo.map(function(row) {
+
+            let ul = document.createElement('ul');
+            ul.textContent = row;
+            return ul;
+
+        });        
+
+        demInfo.append(...nodes);
 
     });
 
