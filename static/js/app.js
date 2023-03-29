@@ -37,41 +37,93 @@ d3.json(url).then(function(data) {
     // Create a variable to represent the 'samples' array of our dataset.
     let sample = data.samples
 
-    let sampleValuesList = [];
-    let otuIdsList = [];
-    let otuLabelsList = [];
+    // Bar Graph section.
+    let barSampleValuesList = [];
+    let barOtuIdsList = [];
+    let barOtuLabelsList = [];
 
     // Loop through the first 10 sample_values, otu_ids, and otu_labels of the first sample (where id == '940') in the 'samples' array,
     // then add them to their respective lists.
     for (let i = 0; i < 10; i++) {
                 
-        sampleValuesList.push(sample[0].sample_values[i]);
-        otuIdsList.push(sample[0].otu_ids[i]);
-        otuLabelsList.push(sample[0].otu_labels[i]);
+        barSampleValuesList.push(sample[0].sample_values[i]);
+        barOtuIdsList.push(sample[0].otu_ids[i]);
+        barOtuLabelsList.push(sample[0].otu_labels[i]);
 
     };
 
-    // Log our results into the console.
-    console.log(sampleValuesList);
-    console.log(otuIdsList);
-    console.log(otuLabelsList);
+    // Log the results into the console.
+    console.log(barSampleValuesList);
+    console.log(barOtuIdsList);
+    console.log(barOtuLabelsList);
 
-    // Using the data from the three lists above, create a horizontal bar graph.
-    let dataSet = [{
-        x: sampleValuesList.reverse(),
-        y: otuIdsList.map(x => `OTU ${x}`).reverse(),
-        text: otuLabelsList.reverse(),
+    // Create a horizontal bar graph.
+    let barData = [{
+        x: barSampleValuesList.reverse(),
+        y: barOtuIdsList.map(x => `OTU ${x}`).reverse(),
+        text: barOtuLabelsList.reverse(),
         type: 'bar',
         orientation: 'h'
     }];
     
-    let layout = {
+    let barLayout = {
+        title: `The Top 10 OTUs in Test Subject ${sample[0].id}'s Belly Button`,
+        xaxis: {
+            title: 'Sample Value'
+        },
         height: 600,
-        width: 600,
-        title: `The Top 10 OTUs in Test Subject ${sample[0].id}'s Belly Button`
+        width: 600
     };
     
-    Plotly.newPlot('bar', dataSet, layout);
+    Plotly.newPlot('bar', barData, barLayout);
+
+    // Bubble Chart section.
+    let bubbleSampleValuesList = [];
+    let bubbleOtuIdsList = [];
+    let bubbleOtuLabelsList = [];
+
+    // Loop through all sample_values, otu_ids, and otu_labels of the first sample (where id == '940') in the 'samples' array,
+    // then add them to their respective lists.
+    for (let i = 0; i < sample[0].otu_ids.length; i++) {
+                
+        bubbleSampleValuesList.push(sample[0].sample_values[i]);
+        bubbleOtuIdsList.push(sample[0].otu_ids[i]);
+        bubbleOtuLabelsList.push(sample[0].otu_labels[i]);
+
+    };
+
+    // Log the results into the console.
+    console.log(bubbleSampleValuesList);
+    console.log(bubbleOtuIdsList);
+    console.log(bubbleOtuLabelsList);
+
+    // Create a bubble chart.
+    var bubbleData = [{
+        x: bubbleOtuIdsList,
+        y: bubbleSampleValuesList,
+        text: bubbleOtuLabelsList,
+        mode: 'markers',
+        marker: {
+            size: bubbleSampleValuesList,
+            color: bubbleOtuIdsList,
+            colorscale: 'Electric'
+        }
+    }];
+      
+    var bubbleLayout = {
+        title: `OTU by Sample Value for Test Subject ${sample[0].id}`,
+        xaxis: {
+            title: 'OTU ID'
+        },
+        yaxis: {
+            title: 'Sample Value'
+        },
+        showlegend: false,
+        height: 600,
+        width: 1000
+    };
+ 
+    Plotly.newPlot('bubble', bubbleData, bubbleLayout);
 
     // Demographic Info section.
     let meta = data.metadata;
@@ -85,7 +137,7 @@ d3.json(url).then(function(data) {
 
     };
 
-    // Log our results into the console.
+    // Log the results into the console.
     console.log(defaultInfo);
         
     // Add the defaultInfo information to the webpage under the Demographic Info header as an unordered list.
@@ -120,30 +172,58 @@ function optionChanged() {
         // Create a variable to represent the Test Subject ID that was chosen by the user and filter our data results to that specific ID.
         let sample = data.samples.filter(x => x.id.toString() == id)[0];
 
-        let sampleValuesList = [];
-        let otuIdsList = [];
-        let otuLabelsList = [];
+
+        // Bar Graph section.
+        let barSampleValuesList = [];
+        let barOtuIdsList = [];
+        let barOtuLabelsList = [];
 
         // Loop through the first 10 sample_values, otu_ids, and otu_labels of the chosen sample in the 'samples' array,
         // then add them to their respective lists.
         for (let i = 0; i < 10; i++) {
                 
-            sampleValuesList.push(sample.sample_values[i]);
-            otuIdsList.push(sample.otu_ids[i]);
-            otuLabelsList.push(sample.otu_labels[i]);
+            barSampleValuesList.push(sample.sample_values[i]);
+            barOtuIdsList.push(sample.otu_ids[i]);
+            barOtuLabelsList.push(sample.otu_labels[i]);
 
         };
 
-        // Log our results into the console.
-        console.log(sampleValuesList);
-        console.log(otuIdsList);
-        console.log(otuLabelsList);
+        // Log the results into the console.
+        console.log(barSampleValuesList);
+        console.log(barOtuIdsList);
+        console.log(barOtuLabelsList);
     
         // Update the bar chart's data to represent the info of the Test Subject chosen by the user.
-        Plotly.restyle('bar', 'x', [sampleValuesList.reverse()]);
-        Plotly.restyle('bar', 'y', [otuIdsList.map(x => `OTU ${x}`).reverse()]);
-        Plotly.restyle('bar', 'text', [otuLabelsList.reverse()]);
+        Plotly.restyle('bar', 'x', [barSampleValuesList.reverse()]);
+        Plotly.restyle('bar', 'y', [barOtuIdsList.map(x => `OTU ${x}`).reverse()]);
+        Plotly.restyle('bar', 'text', [barOtuLabelsList.reverse()]);
         Plotly.relayout('bar', 'title', `The Top 10 OTUs in Test Subject ${sample.id}'s Belly Button`);
+
+        // Bubble Chart section.
+        let bubbleSampleValuesList = [];
+        let bubbleOtuIdsList = [];
+        let bubbleOtuLabelsList = [];
+
+        // Loop through all sample_values, otu_ids, and otu_labels of the chosen sample in the 'samples' array,
+        // then add them to their respective lists.
+        for (let i = 0; i < sample.otu_ids.length; i++) {
+        
+            bubbleSampleValuesList.push(sample.sample_values[i]);
+            bubbleOtuIdsList.push(sample.otu_ids[i]);
+            bubbleOtuLabelsList.push(sample.otu_labels[i]);
+
+        };
+
+        // Log the results into the console.
+        console.log(bubbleSampleValuesList);
+        console.log(bubbleOtuIdsList);
+        console.log(bubbleOtuLabelsList);
+
+        // Update the bubble chart's data to represent the info of the Test Subject chosen by the user.
+        Plotly.restyle('bubble', 'x', [bubbleOtuIdsList]);
+        Plotly.restyle('bubble', 'y', [bubbleSampleValuesList]);
+        Plotly.restyle('bubble', 'text', [bubbleOtuLabelsList]);
+        Plotly.relayout('bubble', 'title', `OTU by Sample Value for Test Subject ${sample.id}`);
 
         // Demographic Info section.
         let meta = data.metadata.filter(x => x.id.toString() == id)[0];
@@ -157,7 +237,7 @@ function optionChanged() {
 
         };
 
-        // Log our results into the console.
+        // Log the results into the console.
         console.log(testSubjectInfo);
         
         // Add the chosen individual's information to the webpage under the Demographic Info header as an unordered list.
