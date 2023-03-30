@@ -72,7 +72,7 @@ d3.json(url).then(function(data) {
             title: 'Sample Value'
         },
         height: 600,
-        width: 600
+        width: 900
     };
     
     Plotly.newPlot('bar', barData, barLayout);
@@ -120,7 +120,7 @@ d3.json(url).then(function(data) {
         },
         showlegend: false,
         height: 600,
-        width: 1000
+        width: 1200
     };
  
     Plotly.newPlot('bubble', bubbleData, bubbleLayout);
@@ -260,4 +260,3 @@ function optionChanged() {
     });
 
 };
-
